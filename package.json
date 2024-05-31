@@ -7,7 +7,6 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "start:dev": "nodemon",
     "dev": "nodemon src/index.ts"
   },
   "dependencies": {
