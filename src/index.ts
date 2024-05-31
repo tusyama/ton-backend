@@ -8,7 +8,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.get("/check-task/", async (req, res) => {
+app.get("/check-task", async (req, res) => {
   const { address, time } = req.query;
   if (!address || !time) {
     res.status(400).json({ error: "need time & address" });
