@@ -8,9 +8,9 @@
   "license": "ISC",
   "scripts": {
     "dev": "nodemon index.ts",
-    "start": "node build/index.js",
+    "start": "node ./build/index.js",
     "build": "tsc",
-    "build:digitalocean": "npm install --production=false && npm run build && npm ci"
+    "build:digitalocean": "npm install --production=false && npm run build && npm prune --production && npm ci"
   },
   "dependencies": {
     "@orbs-network/ton-access": "^2.3.3",
