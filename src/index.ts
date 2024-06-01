@@ -24,9 +24,9 @@ app.get("/check-task", async (req, res) => {
       return;
     }
 
-    const transaction = transactions[0];
+    const [transaction] = transactions;
     const transactionTime = transaction.utime;
-    console.log(transactionTime);
+    console.log({transactionTime});
     if (transactionTime > timeInt) {
       res.json({ status: "done" });
       return;
