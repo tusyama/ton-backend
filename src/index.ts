@@ -2,10 +2,13 @@ import express from "express";
 import dotenv from "dotenv";
 import { getHttpEndpoint } from "@orbs-network/ton-access";
 import TonWeb from "tonweb";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
+app.use(cors({ origin: "*" }));
+
 const port = process.env.PORT || 3000;
 
 app.get("/check-task", async (req, res) => {
