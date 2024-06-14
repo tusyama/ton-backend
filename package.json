@@ -7,7 +7,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "dev": "nodemon index.ts",
+    "dev": "nodemon src/index.ts",
     "start": "node ./build/index.js",
     "build": "tsc",
     "build:digitalocean": "npm install --production=false && npm run build && npm prune --production && npm run start"
