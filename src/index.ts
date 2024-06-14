@@ -4,7 +4,7 @@ import { getHttpEndpoint } from "@orbs-network/ton-access";
 import TonWeb from "tonweb";
 import cors from "cors";
 import { Address, TonClient, beginCell, fromNano } from "@ton/ton";
-import { ETHbridge } from "./consts/bridges";
+import { ETHbridge, BSCbridge } from "./consts/bridges";
 import { mainStakingPool } from "./consts/stakings";
 
 dotenv.config();
@@ -20,22 +20,43 @@ async function getTONWebConnector() {
 }
 // TODO wrap these methods into route-controller-service layer model
 app.get("/check-task/bridge", async (req, res) => {
-  const { address } = req.query;
-  if (!address) {
-    res.status(400).json({ error: "'address' required" });
+  const { address: addressRaw, network: networkRaw } = req.query;
+
+  if (!addressRaw || !networkRaw) {
+    res.status(400).json({ error: "required: address, network" });
     return;
   }
+
+  const bridges = {
+    ETH: ETHbridge,
+    BSC: BSCbridge,
+  };
+
+  const network = networkRaw.toString() as "ETH" | "BSC";
+  const myAddressString = addressRaw.toString();
+  const myAddress = Address.parse(myAddressString); // address that you want to fetch transactions from
+
+  const bridgeAddress = bridges[network];
+
+  if (!bridgeAddress) {
+    res.status(400).json({ error: "wrong: network" });
+    return;
+  }
+
   try {
     const tonweb = await getTONWebConnector();
-    const transactions = await tonweb.getTransactions(address as string, 99);
+    const transactions = await tonweb.getTransactions(myAddressString, 99);
     if (transactions.length === 0) {
       res.json({ status: "waiting" });
       return;
     }
 
     const transaction = transactions.find(
-      (tx: any) => tx["in_msg"]["source"].toString() === ETHbridge
+      (tx: any) =>
+        tx["in_msg"]["source"].toString() === bridgeAddress &&
+        tx["in_msg"]["destination"].toString() === myAddress.toString()
     );
+
     if (!transaction) {
       res.json({ status: "waiting" });
       return;
