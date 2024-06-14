@@ -10,7 +10,10 @@
     "strict": true,"skipLibCheck": true,
     "allowJs": true,
     "resolveJsonModule": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "lib": [
+      "dom",
+    ],
   },
   "include": ["src"]
 }
