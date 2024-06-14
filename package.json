@@ -19,12 +19,12 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "ton": "^13.9.0",
-    "tonweb": "^0.0.66",
-    "typescript": "^5.4.5"
+    "tonweb": "^0.0.66"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "nodemon": "^3.1.2"
+    "nodemon": "^3.1.2",
+    "typescript": "^5.4.5"
   }
 }
