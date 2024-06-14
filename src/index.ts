@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import { getHttpEndpoint } from "@orbs-network/ton-access";
 import TonWeb from "tonweb";
@@ -21,7 +21,7 @@ async function getTONWebConnector() {
   return new TonWeb(new TonWeb.HttpProvider(endpoint));
 }
 // TODO wrap these methods into route-controller-service layer model
-app.get("/check-task/bridge", async (req, res) => {
+app.get("/check-task/bridge", async (req: Request, res: Response) => {
   const { address: addressRaw, network: networkRaw, time } = req.query;
 
   if (!addressRaw || !networkRaw || !time) {
@@ -79,7 +79,7 @@ app.get("/check-task/bridge", async (req, res) => {
   }
 });
 
-app.get("/check-task/balance", async (req, res) => {
+app.get("/check-task/balance", async (req: Request, res: Response) => {
   const { address } = req.query;
   if (!address) {
     res.status(400).json({ error: "'address' required" });
@@ -96,7 +96,7 @@ app.get("/check-task/balance", async (req, res) => {
   }
 });
 
-app.get("/check-task/staking", async (req, res) => {
+app.get("/check-task/staking", async (req: Request, res: Response) => {
   const { address } = req.query;
   if (!address) {
     res.status(400).json({ error: "'address' required" });
@@ -124,7 +124,7 @@ app.get("/check-task/staking", async (req, res) => {
   }
 });
 
-app.get("/parse-transactions", async (req, res) => {
+app.get("/parse-transactions", async (req: Request, res: Response) => {
   const { address } = req.query;
   if (!address) {
     res.status(400).json({ error: "need address" });
