@@ -24,8 +24,8 @@ async function getTONWebConnector() {
 app.get("/check-task/bridge", async (req: Request, res: Response) => {
   const { address: addressRaw, network: networkRaw, time } = req.query;
 
-  if (!addressRaw || !networkRaw || !time) {
-    res.status(400).json({ error: "required: address, network, time" });
+  if (!addressRaw || !networkRaw) {
+    res.status(400).json({ error: "required: address, network" });
     return;
   }
 
@@ -36,7 +36,7 @@ app.get("/check-task/bridge", async (req: Request, res: Response) => {
 
   const network = networkRaw.toString() as "ETH" | "BSC";
   const myAddressString = addressRaw.toString();
-  const myAddress = Address.parse(myAddressString); // address that you want to fetch transactions from
+  const myAddress = Address.parse(myAddressString);
 
   const bridgeAddress = bridgesAddresses[network];
 
@@ -58,16 +58,21 @@ app.get("/check-task/bridge", async (req: Request, res: Response) => {
         tx["in_msg"]["source"].toString() === bridgeAddress &&
         tx["in_msg"]["destination"].toString() === myAddress.toString()
     );
-
-    if (!transaction) {
-      res.json({ status: "waiting" });
-      return;
+    // time prop is optional, if you pass it - it checks if tx happened after 'time'
+    if (time) {
+      if (!transaction) {
+        res.json({ status: "waiting" });
+        return;
+      }
+      const timeInt = Number(time);
+      const transactionTime = transaction.utime;
+      if (transactionTime > timeInt) {
+        res.json({ status: "done" });
+        return;
+      }
     }
 
-    const timeInt = parseInt(time as string);
-    const transactionTime = transaction.utime;
-
-    if (transactionTime > timeInt) {
+    if (transaction) {
       res.json({ status: "done" });
       return;
     }
