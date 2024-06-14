@@ -20,14 +20,14 @@ async function getTONWebConnector() {
 }
 // TODO wrap these methods into route-controller-service layer model
 app.get("/check-task/bridge", async (req, res) => {
-  const { address: addressRaw, network: networkRaw } = req.query;
+  const { address: addressRaw, network: networkRaw, time } = req.query;
 
-  if (!addressRaw || !networkRaw) {
-    res.status(400).json({ error: "required: address, network" });
+  if (!addressRaw || !networkRaw || !time) {
+    res.status(400).json({ error: "required: address, network, time" });
     return;
   }
 
-  const bridges = {
+  const bridgesAddresses = {
     ETH: ETHbridge,
     BSC: BSCbridge,
   };
@@ -36,7 +36,7 @@ app.get("/check-task/bridge", async (req, res) => {
   const myAddressString = addressRaw.toString();
   const myAddress = Address.parse(myAddressString); // address that you want to fetch transactions from
 
-  const bridgeAddress = bridges[network];
+  const bridgeAddress = bridgesAddresses[network];
 
   if (!bridgeAddress) {
     res.status(400).json({ error: "wrong: network" });
@@ -61,7 +61,16 @@ app.get("/check-task/bridge", async (req, res) => {
       res.json({ status: "waiting" });
       return;
     }
-    res.json({ status: "done" });
+
+    const timeInt = parseInt(time as string);
+    const transactionTime = transaction.utime;
+
+    if (transactionTime > timeInt) {
+      res.json({ status: "done" });
+      return;
+    }
+
+    res.json({ status: "waiting" });
     return;
   } catch (e) {
     res.status(400).json({ status: "error", message: "address isn't valid" });
