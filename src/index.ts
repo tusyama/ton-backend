@@ -14,6 +14,8 @@ app.use(cors({ origin: "*" }));
 
 const port = process.env.PORT || 3000;
 
+// co
+
 async function getTONWebConnector() {
   const endpoint = await getHttpEndpoint();
   return new TonWeb(new TonWeb.HttpProvider(endpoint));
