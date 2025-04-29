@@ -1,9 +1,11 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
+import axios from "axios";
 import cors from "cors";
 import { getHttpEndpoint } from "@orbs-network/ton-access";
 import TonWeb from "tonweb";
 import { Address } from "@ton/ton";
+
 import { ETHbridge, BSCbridge } from "./consts/bridges";
 import { mainStakingPool } from "./consts/stakings";
 
@@ -13,6 +15,13 @@ const app = express();
 app.use(cors({ origin: "*" }));
 
 const port = process.env.PORT || 3000;
+
+const tonApiConnector = axios.create({
+  baseURL: "https://tonapi.io/v2",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 async function getTONWebConnector() {
   const endpoint = await getHttpEndpoint();
@@ -118,6 +127,23 @@ app.get("/check-task/balance", async (req: Request, res: Response) => {
     const balance = await tonweb.getBalance(address as string);
 
     res.json({ status: parseInt(balance) > 0 ? "done" : "waiting" });
+    return;
+  } catch (e) {
+    res.status(400).json({ status: "error", message: "address isn't valid" });
+  }
+});
+
+app.get("/check-task/balance/:address/:tokenAddress", async (req: Request, res: Response) => {
+  const { tokenAddress, address } = req.params;
+  if (!address || !tokenAddress) {
+    res.status(400).json({ error: "'address' and 'tokenAddress' parameters are required" });
+    return;
+  }
+
+  try {
+    const response = await tonApiConnector.get(`/accounts/${address}/jettons/${tokenAddress}`);
+    const balance = parseInt(response.data.balance);
+    res.json({ status: balance > 0 ? "done" : "waiting", balance: balance });
     return;
   } catch (e) {
     res.status(400).json({ status: "error", message: "address isn't valid" });
