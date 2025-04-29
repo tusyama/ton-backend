@@ -146,6 +146,7 @@ app.get("/check-task/balance/:address/:tokenAddress", async (req: Request, res: 
     res.json({ status: balance > 0 ? "done" : "waiting", balance: balance });
     return;
   } catch (e) {
+    console.error(e);
     res.status(400).json({ status: "error", message: "address isn't valid" });
   }
 });
@@ -173,6 +174,7 @@ app.get("/check-task/staking", async (req: Request, res: Response) => {
     res.json({ status: "done" });
     return;
   } catch (e) {
+    console.error(e);
     res.status(400).json({ status: "error", message: "address isn't valid" });
   }
 });
@@ -347,5 +349,5 @@ app.get("/check-task/staking", async (req: Request, res: Response) => {
 // });
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`onchain-back app listening at http://localhost:${port}`);
 });
