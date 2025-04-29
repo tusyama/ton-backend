@@ -141,7 +141,14 @@ app.get("/check-task/balance/:address/:tokenAddress", async (req: Request, res: 
   }
 
   try {
-    const response = await tonApiConnector.get(`/accounts/${address}/jettons/${tokenAddress}`);
+    const response = await tonApiConnector
+      .get(`/accounts/${address}/jettons/${tokenAddress}`)
+      .catch((e) => {
+        if (e.response.data.error.includes("has no jetton wallet")) {
+          return { data: { balance: 0 } };
+        }
+        throw e;
+      });
     const balance = parseInt(response.data.balance);
     res.json({ status: balance > 0 ? "done" : "waiting", balance: balance });
     return;
